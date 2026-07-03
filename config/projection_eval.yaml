@@ -1,0 +1,100 @@
+# General
+write_to_file: False
+exps: [
+  'avoiding-d3il',
+  ]
+seeds: [0,1,2,3,4,5,6,7,8,9]
+avoiding_halfspace_variants: [
+  'top-right-hard',    # /
+  ]   # 'top-right: /', 'top-left: \'
+n_trials: 2
+
+# Trajectory Generation
+generate_trajectories: True  # If True, generate new trajectories; if False, use existing file
+trajectory_seed: 42  # Seed for trajectory generation (change this to get different trajectories)
+trajectory_file: 'generated_trajectories.npy'  # File to save/load trajectories
+plot_generated_trajectories: True  # If True, create visualization plots of generated trajectories
+
+trajectory_type: 'dynamic'  # 'static' or 'dynamic'
+trajectory_pos: 'given'  # 'given' or 'random'
+num_static: 6  # Number of static obstacles (for mixed trajectories)
+# Obstacle positions (used when trajectory_pos: 'given')
+given_obstacle_positions: {
+  'avoiding-d3il': {
+    'obstacle_1': [0.4, 0.15],
+    'obstacle_2': [0.4, -0.05], 
+    'obstacle_3': [0.5, -0.05],
+    'obstacle_4': [0.35, 0.08],
+    'obstacle_5': [0.5, 0.08],
+    'obstacle_6': [0.35, 0.15]
+  }
+}
+
+dynamic_obstacle_initial_position: 'start_in_random_position' # 'start_in_given_position' or 'start_in_random_position'
+dynamic_obstacle_end_position: 'end_in_given_position' # 'end_in_given_position' or 'end_in_random_position'
+
+
+dt: {
+  'avoiding': 1,    # Since a = [delta_x, delta_y] and not [vx, vy]
+}
+observation_indices: {
+  'avoiding': {'x_des': 0, 'y_des': 1, 'x': 2, 'y': 3},
+}
+
+action_indices: {
+  'avoiding': {'vx': 0, 'vy': 1},
+}
+
+# Policy
+diffusion_timestep_threshold: 0.5
+
+# Projection 
+projection_variants: [
+  # Figure 2, Table 1 and Figure 3:
+  'dpcc-t-tightened',
+  'diffmpc',
+]
+projection_cost: 'pos_vel'
+constraint_types: [
+  'halfspace', 
+  'obstacles', 
+  'dynamics',
+  'bounds',
+  ]
+enlarge_constraints: {
+  'avoiding': 0.025,
+}
+halfspace_constraints: {
+  'avoiding-d3il': [
+    # [[0.8, -0.3], [0.3, 0.5], 'below'],   # hard (\ shape)
+    # [[0.2, -0.3], [0.7, 0.5], 'below'],     # hard (/ shape)
+    [[0.8, -0.5], [0.4, 0.5], 'below'],   # hard (\ shape)
+    [[0.8, -0.5], [0.4, 0.5], 'below'],   # hard (/ shape)
+    [[0.8, -0.5], [0.4, 0.5], 'below'],  # easier (\ shape)
+    [[0.8, -0.5], [0.4, 0.5], 'below'],   # easier (/ shape)
+    ],
+}
+obstacle_constraints: {
+  'avoiding-d3il': [
+    # {'type': 'sphere_outside', 'dimensions': ['x', 'y'], 'center': [0.575, 0.08], 'radius': 0.1},  # second row, right obstacle larger
+    {'type': 'sphere_outside', 'dimensions': ['x', 'y'], 'center': [0.5, -0.05], 'radius': 0.06},  # second row, left obstacle larger
+    {'type': 'sphere_outside', 'dimensions': ['x', 'y'], 'center': [0.5, -0.05], 'radius': 0.06},  # second row, right obstacle larger
+    {'type': 'sphere_outside', 'dimensions': ['x', 'y'], 'center': [0.5, -0.05], 'radius': 0.06},  # first row obstacle larger
+    {'type': 'sphere_outside', 'dimensions': ['x', 'y'], 'center': [0.5, -0.05], 'radius': 0.06},  # second row, left obstacle larger
+    {'type': 'sphere_outside', 'dimensions': ['x', 'y'], 'center': [0.5, -0.05], 'radius': 0.06},  # second row, right obstacle larger
+    {'type': 'sphere_outside', 'dimensions': ['x', 'y'], 'center': [0.5, -0.05], 'radius': 0.06},  # first row obstacle larger
+  ]
+}
+bounds: {   # need to be within the limits of the dataset due to the normalization
+  'avoiding-d3il': [
+    {'type': 'lower', 'dimensions': ['vx', 'vy'], 'values': [-0.01, 0]},
+    {'type': 'upper', 'dimensions': ['vx', 'vy'], 'values': [0.01, 0.01]},
+    {'type': 'lower', 'dimensions': ['vx', 'vy'], 'values': [-0.012, 0]},
+    {'type': 'upper', 'dimensions': ['vx', 'vy'], 'values': [0.012, 0.012]},
+  ],
+}
+# Plotting
+plot_how_many: 10
+ax_limits: {
+  'avoiding-d3il': [[0.2, 0.8], [-0.3, 0.4]]
+}

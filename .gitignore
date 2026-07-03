@@ -1,0 +1,6 @@
+args.json
+.vscode/
+logs/*
+d4rl-minari-dataset-generation_bkup/*
+diffuser.egg-info/*
+__pycache__/

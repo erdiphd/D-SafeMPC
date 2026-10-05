@@ -13,8 +13,8 @@ import numpy as np
 import glob
 from datetime import datetime
 
-# Your project path
-path_str = '/home/erdi/Storage/publications/erdi_dpcc_test/dpcc_original'
+# Project path (defaults to repository root)
+path_str = os.path.dirname(os.path.abspath(__file__))
 
 def find_latest_results_file(logs_dir, experiment_pattern="*", format_type="pkl"):
     """Find the most recent results file matching the pattern"""
